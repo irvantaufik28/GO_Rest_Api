@@ -6,7 +6,7 @@ type Task struct {
 	ID          int
 	Title       string
 	Description string
-	IsDoing     bool
+	Doing       bool
 	CreatedAt   time.Time
 	UpdateAt    time.Time
 }

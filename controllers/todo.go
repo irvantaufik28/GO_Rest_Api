@@ -10,22 +10,28 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func TodoList(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"name": "Irvan Taufik",
-		"Job":  " Programmer",
-	})
+type taskController struct {
+	taskUseCase task.UseCaseTask
 }
 
-func GetTaskById(c *gin.Context) {
+func TaskController(taskUseCase task.UseCaseTask) *taskController {
+
+	return &taskController{taskUseCase}
+}
+
+func (controller *taskController) TodoList(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+func (controller *taskController) GetTaskById(c *gin.Context) {
 	id := c.Param("id")
 	c.JSON(http.StatusOK, gin.H{"id": id})
 }
 
-func CreateTask(c *gin.Context) {
-	var bookInput task.BookInput
+func (controller *taskController) CreateTask(c *gin.Context) {
+	var taskRequest task.TaskRequest
 
-	err := c.ShouldBindJSON(&bookInput)
+	err := c.ShouldBindJSON(&taskRequest)
 	if err != nil {
 		errorMessages := []string{}
 		for _, e := range err.(validator.ValidationErrors) {
@@ -38,9 +44,17 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
+	task, err := controller.taskUseCase.Create(taskRequest)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erros": err,
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"title": bookInput.Title,
-		"price": bookInput.Price,
+		"data": task,
 	})
 
 }
