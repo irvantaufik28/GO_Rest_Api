@@ -27,6 +27,8 @@ func main() {
 	v1.GET("/", taskControllers.TodoList)
 	v1.GET("/:id", taskControllers.GetTaskById)
 	v1.POST("/add", taskControllers.CreateTask)
+	v1.PUT("/update/:id", taskControllers.UpdateTask)
+	v1.DELETE("/delete/:id", taskControllers.DeleteTask)
 
 	router.Run(":3000")
 }

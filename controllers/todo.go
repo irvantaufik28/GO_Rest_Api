@@ -66,6 +66,28 @@ func (controller *taskController) GetTaskById(c *gin.Context) {
 	})
 }
 
+func (controller *taskController) DeleteTask(c *gin.Context) {
+	idStr := c.Param("id")
+	id, _ := strconv.Atoi(idStr)
+
+	t, err := controller.taskUseCase.Delete(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": err,
+		})
+		return
+	}
+	taskResponse := task.TaskResponse{
+		ID:          t.ID,
+		Title:       t.Title,
+		Description: t.Description,
+		Doing:       t.Doing,
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"data": taskResponse,
+	})
+}
+
 func (controller *taskController) CreateTask(c *gin.Context) {
 	var taskRequest task.TaskRequest
 
@@ -82,7 +104,7 @@ func (controller *taskController) CreateTask(c *gin.Context) {
 		return
 	}
 
-	task, err := controller.taskUseCase.Create(taskRequest)
+	t, err := controller.taskUseCase.Create(taskRequest)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -90,9 +112,54 @@ func (controller *taskController) CreateTask(c *gin.Context) {
 		})
 		return
 	}
+	taskResponse := task.TaskResponse{
+		ID:          t.ID,
+		Title:       t.Title,
+		Description: t.Description,
+		Doing:       t.Doing,
+	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": task,
+		"data": taskResponse,
+	})
+
+}
+
+func (controller *taskController) UpdateTask(c *gin.Context) {
+	var taskRequest task.TaskRequest
+
+	err := c.ShouldBindJSON(&taskRequest)
+	if err != nil {
+		errorMessages := []string{}
+		for _, e := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf(e.Field(), e.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": errorMessages,
+		})
+		return
+	}
+	idStr := c.Param("id")
+	id, _ := strconv.Atoi(idStr)
+
+	t, err := controller.taskUseCase.Update(id, taskRequest)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erros": err,
+		})
+		return
+	}
+	taskResponse := task.TaskResponse{
+		ID:          t.ID,
+		Title:       t.Title,
+		Description: t.Description,
+		Doing:       t.Doing,
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": taskResponse,
 	})
 
 }
