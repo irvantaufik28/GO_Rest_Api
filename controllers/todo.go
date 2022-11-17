@@ -55,12 +55,7 @@ func (controller *taskController) GetTaskById(c *gin.Context) {
 		})
 		return
 	}
-	taskResponse := task.TaskResponse{
-		ID:          t.ID,
-		Title:       t.Title,
-		Description: t.Description,
-		Doing:       t.Doing,
-	}
+	taskResponse := convertTotTaskResponse(t)
 	c.JSON(http.StatusOK, gin.H{
 		"data": taskResponse,
 	})
@@ -77,12 +72,7 @@ func (controller *taskController) DeleteTask(c *gin.Context) {
 		})
 		return
 	}
-	taskResponse := task.TaskResponse{
-		ID:          t.ID,
-		Title:       t.Title,
-		Description: t.Description,
-		Doing:       t.Doing,
-	}
+	taskResponse := convertTotTaskResponse(t)
 	c.JSON(http.StatusOK, gin.H{
 		"data": taskResponse,
 	})
@@ -162,4 +152,13 @@ func (controller *taskController) UpdateTask(c *gin.Context) {
 		"data": taskResponse,
 	})
 
+}
+
+func convertTotTaskResponse(t task.Task) task.TaskResponse {
+	return task.TaskResponse{
+		ID:          t.ID,
+		Title:       t.Title,
+		Description: t.Description,
+		Doing:       t.Doing,
+	}
 }

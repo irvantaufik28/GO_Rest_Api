@@ -7,7 +7,7 @@ type Repository interface {
 	FindById(Id int) (Task, error)
 	Create(task Task) (Task, error)
 	Update(task Task) (Task, error)
-	Delete(Id int) (Task, error)
+	Delete(task Task) (Task, error)
 }
 
 type repository struct {
@@ -32,8 +32,7 @@ func (r *repository) FindById(id int) (Task, error) {
 	return task, err
 }
 
-func (r *repository) Delete(id int) (Task, error) {
-	var task Task
+func (r *repository) Delete(task Task) (Task, error) {
 	err := r.db.Delete(&task).Error
 
 	return task, err

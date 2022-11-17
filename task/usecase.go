@@ -27,8 +27,9 @@ func (u *useCaseTask) FindById(id int) (Task, error) {
 }
 
 func (u *useCaseTask) Delete(id int) (Task, error) {
-	task, err := u.repository.Delete(id)
-	return task, err
+	task, err := u.repository.FindById(id)
+	deleteTask, err := u.repository.Delete(task)
+	return deleteTask, err
 }
 
 func (u *useCaseTask) Create(taskRequest TaskRequest) (Task, error) {
